@@ -46,7 +46,7 @@ where `config` contains the ftp server configuration (these are the default valu
 and the `options` object may contain the following keys:
 
 * *logging* (String): `'none'`, `'basic'`, `'debug'` - level of logging for all the tasks - use `'debug'` in case of any issues
-* *Logger* (Console): default console - if you want to inject your custom logger, use this property
+* *Logger* (Console): default `console` - if you want to inject your custom logger, use this property
 * *overwrite* (String): `'none'`, `'older'`, `'all'` - determines which files should be overwritten when downloading/uploading - `'older'` compares the date of modification of local and remote files
 * *testingTimezoneDir* (String): default `null` - using default home directory if `null`. The directory should have Read/Write permission in order to adjust timezone for overwriting files.
 * *globOptions* (Glob configuraion object): default `{ nonull: false }` - Custom glob options for file search.
@@ -78,7 +78,7 @@ ftpClient.disconnect().subscribe(
 
 ## Methods
 * **download**(source: string, dest: string, options?: Options):
-  Observable<DownloadResults> - downloads the contents
+  Observable< DownloadResults > - downloads the contents
 of `source` to `dest` if both exist. The next function returns the following object:
 ```typescript
 {
@@ -90,7 +90,7 @@ of `source` to `dest` if both exist. The next function returns the following obj
 ```
 
 * **upload**(patterns: string | string[], dest: string,
-  options?: Options): Observable<UploadResults> - expands the source paths
+  options?: Options): Observable< UploadResults > - expands the source paths
 using the glob module to the (`patterns` argument), uploads all found files and directories to the specified `dest`. The next function returns the following object:
 ```typescript
 {
