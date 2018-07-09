@@ -1,0 +1,69 @@
+{
+  "extends": "tslint:recommended",
+  "defaultSeverity": "warning",
+  "rules": {
+    "quotemark": [true, "single"],
+    "max-line-length": {
+      "options": [80]
+    },
+    "ordered-imports": false,
+    "interface-name": [true, "never-prefix"],
+    "semicolon": [true, "always", "ignore-interfaces"],
+    "member-access": [true, "no-public"],
+    "trailing-comma": [true, {
+      "multiline": "always",
+      "singleline": "never"
+    }],
+    "only-arrow-functions": false,
+    "no-unused-expression": false,
+    "member-ordering": [
+      true,
+      {
+        "order": [
+          "private-instance-field",
+          "public-instance-field",
+          "private-static-field",
+          "public-static-field",
+          "private-constructor",
+          "public-constructor",
+          "private-instance-method",
+          "protected-instance-method",
+          "public-instance-method"
+        ]
+      }
+    ],
+    "no-shadowed-variable": [
+      true,
+      {
+        "class": true,
+        "enum": true,
+        "function": true,
+        "interface": false,
+        "import": false,
+        "namespace": false,
+        "typeAlias": false,
+        "typeParameter": false
+      }
+    ],
+    "arrow-parens": false,
+    "object-literal-sort-keys": false,
+    "one-line": [true, "check-catch", "check-finally"],
+    "prefer-for-of": false,
+    "align": [true, "statements", "members"],
+    "new-parens": true,
+    "no-arg": true,
+    "no-bitwise": true,
+    "no-conditional-assignment": true,
+    "no-consecutive-blank-lines": true,
+    "no-console": {
+      "severity": "error",
+      "options": [
+        "debug",
+        "log",
+        "time",
+        "timeEnd",
+        "trace"
+      ]
+    }
+  }
+}

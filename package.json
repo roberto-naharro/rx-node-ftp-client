@@ -1,0 +1,73 @@
+{
+  "name": "rx-node-ftp-client",
+  "version": "0.0.1",
+  "author": {
+    "name": "Roberto Naharro",
+    "email": "roberto.naharro@gmail.com"
+  },
+  "description": "A Reactive and Typescript FTP client based on the module ftp-client",
+  "main": "lib/client",
+  "typings": "index.d.ts",
+  "engines": {
+    "npm": ">=2.0.0"
+  },
+  "keywords": [
+    "ftp",
+    "client",
+    "transfer",
+    "RxJS",
+    "Observable",
+    "Reactive",
+    "Rx"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/roberto-naharro/rx-node-ftp-client.git"
+  },
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/roberto-naharro/rx-node-ftp-client/issues"
+  },
+  "homepage": "https://github.com/roberto-naharro/rx-node-ftp-client",
+  "dependencies": {
+    "ftp": "^0.3.10",
+    "glob": "^7.1.2",
+    "lodash": "^4.17.10",
+    "path": "^0.12.7",
+    "rxjs": "^6.2.1",
+    "upath": "^1.1.0"
+  },
+  "scripts": {
+    "build": "gulp",
+    "test": "gulp build-test && mocha \"./**/*.test.js*\"",
+    "test-debug": "gulp build-test && mocha --inspect-brk \"./**/*.test.js*\""
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.4",
+    "@types/faker": "^4.1.2",
+    "@types/ftp": "^0.3.29",
+    "@types/glob": "^5.0.35",
+    "@types/lodash": "^4.14.110",
+    "@types/mocha": "^5.2.3",
+    "@types/node": "10.1.2",
+    "@types/rimraf": "^2.0.2",
+    "@types/sinon": "^5.0.1",
+    "chai": "^4.1.2",
+    "chai-files": "^1.4.0",
+    "del": "^3.0.0",
+    "dts-generator": "^2.1.0",
+    "faker": "^4.1.0",
+    "gulp": "^4.0.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-debug": "^4.0.0",
+    "gulp-filter": "^5.1.0",
+    "gulp-rename": "^1.3.0",
+    "gulp-sourcemaps": "^2.6.4",
+    "gulp-typescript": "^4.0.2",
+    "mocha": "^5.2.0",
+    "rimraf": "^2.6.2",
+    "sinon": "^5.1.1",
+    "typescript": "^2.9.2"
+  }
+}
