@@ -10,12 +10,12 @@ rx-node-ftp-client is an observable version of the package  [ftp-client](http://
 
 # Dependencies
 
-* [rxjs](https://github.com/mscdex/node-ftp) -- v6.2.1
+* [rxjs](https://github.com/reactivex/rxjs) -- v6.2.1
 * [ftp](https://github.com/mscdex/node-ftp) -- v0.3.10
 * [glob](https://github.com/isaacs/node-glob) -- v7.1.2
 * [lodash](https://github.com/lodash/lodash-node) -- v4.17.10
 * [path](https://github.com/jinder/path) -- v4.17.10
-* [upath](https://github.com/jinder/path) -- v1.1.10
+* [upath](https://github.com/anodynos/upath) -- v1.1.10
 
 # Installation
 
@@ -24,17 +24,12 @@ rx-node-ftp-client is an observable version of the package  [ftp-client](http://
 # Usage
 
 ## Initialization
-To crate an instance of the wrapper use the following code:
+To create an instance of the FTP client object:
 
-TypeSript:
+TypeScript:
 ```typescript
 import { Client } from 'rx-node-ftp-client';
 ftpClient = new Client(config, options);
-```
-Javascript
-```javascript
-var FtpClient = require('rx-node-ftp-client'),
-ftpClient = new FtpClient.client(config, options);
 ```
 
 where `config` contains the ftp server configuration (these are the default values):
@@ -50,12 +45,12 @@ where `config` contains the ftp server configuration (these are the default valu
 
 and the `options` object may contain the following keys:
 
-* *logging* (String): 'none', 'basic', 'debug' - level of logging for all the tasks - use 'debug' in case of any issues
+* *logging* (String): `'none'`, `'basic'`, `'debug'` - level of logging for all the tasks - use `'debug'` in case of any issues
 * *Logger* (Console): default console - if you want to inject your custom logger, use this property
-* *overwrite* (String): 'none', 'older', 'all' - determines which files should be overwritten when downloading/uploading - 'older' compares the date of modification of local and remote files
-* *testingTimezoneDir* (String): default null - using default home directory if null. The directory should have Read/Write permission in order to adjust timezone for overwriting files.
+* *overwrite* (String): `'none'`, `'older'`, `'all'` - determines which files should be overwritten when downloading/uploading - `'older'` compares the date of modification of local and remote files
+* *testingTimezoneDir* (String): default `null` - using default home directory if `null`. The directory should have Read/Write permission in order to adjust timezone for overwriting files.
 * *globOptions* (Glob configuraion object): default `{ nonull: false }` - Custom glob options for file search.
-* *disconnect* (boolean): default true - disconnect from ftp after an upload or download operation.
+* *disconnect* (boolean): default `true` - disconnect from ftp after an upload or download operation.
 
 ### Connecting
 After creating the new object you have to manually connect to the server by using the `connect` method:
