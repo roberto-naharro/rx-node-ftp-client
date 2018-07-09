@@ -1,5 +1,5 @@
 # Description
-rx-node-ftp-client is an observable version of the package  [ftp-client](http://nodejs.org/) - with some improvements.
+rx-node-ftp-client is an observable version of the package  [ftp-client](https://github.com/noodny/node-ftp-client) - with some improvements.
 
 
 # Requirements

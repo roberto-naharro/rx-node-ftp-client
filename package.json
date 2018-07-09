@@ -5,7 +5,7 @@
     "name": "Roberto Naharro",
     "email": "roberto.naharro@gmail.com"
   },
-  "description": "A Reactive and Typescript FTP client based on the module ftp-client",
+  "description": "A Reactive and Typescript FTP client based on the ftp-client package",
   "main": "lib/client",
   "typings": "index.d.ts",
   "engines": {
