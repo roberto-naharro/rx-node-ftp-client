@@ -5,6 +5,7 @@ declare module 'rx-node-ftp-client' {
 	import * as fs from 'fs';
 	import { EventEmitter } from 'events';
 	import * as FTP from 'ftp';
+	export { Options as Config } from 'ftp';
 	import { Observable } from 'rxjs';
 	export type LoggingLevels = 'none' | 'basic' | 'debug';
 	export type LoggingTypes = 'info' | 'error' | 'log' | 'warn' | 'trace';

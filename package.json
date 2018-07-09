@@ -1,6 +1,6 @@
 {
   "name": "rx-node-ftp-client",
-  "version": "1.0.0.20180709",
+  "version": "1.0.0",
   "author": {
     "name": "Roberto Naharro",
     "email": "roberto.naharro@gmail.com"
@@ -31,12 +31,12 @@
   },
   "homepage": "https://github.com/roberto-naharro/rx-node-ftp-client",
   "dependencies": {
-    "ftp": "^0.3.10",
-    "glob": "^7.1.2",
-    "lodash": "^4.17.10",
-    "path": "^0.12.7",
-    "rxjs": "^6.2.1",
-    "upath": "^1.1.0"
+    "ftp": "0.3.10",
+    "glob": "7.1.2",
+    "lodash": "4.17.10",
+    "path": "0.12.7",
+    "rxjs": "6.2.1",
+    "upath": "1.1.0"
   },
   "scripts": {
     "build": "gulp",

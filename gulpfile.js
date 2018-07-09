@@ -26,6 +26,7 @@ gulp.task('clean', function() {
   return del([
     'lib/client.js',
     'index.d.ts',
+    'test/*.js',
   ]);
 });
 
