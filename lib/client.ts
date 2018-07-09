@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'upath';
 import { EventEmitter } from 'events';
 import * as FTP from 'ftp';
+export { Options as Config } from 'ftp';
 import * as _ from 'lodash';
 import * as glob from 'glob';
 import {
