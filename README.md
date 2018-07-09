@@ -91,7 +91,7 @@ of `source` to `dest` if both exist. The next function returns the following obj
 
 * **upload**(patterns: string | string[], dest: string,
   options?: Options): Observable< UploadResults > - expands the source paths
-using the glob module to the (`patterns` argument), uploads all found files and directories to the specified `dest`. The next function returns the following object:
+using the glob module (`patterns` argument), uploads all found files and directories to the specified `dest`. The next function returns the following object:
 ```typescript
 {
   uploadedFiles: string[],
