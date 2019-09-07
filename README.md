@@ -9,7 +9,6 @@ rx-node-ftp-client is an observable version of the package  [ftp-client](https:/
 * [node.js](http://nodejs.org/) -- v0.8.0 or newer
 * npm -- v2.0.0 or newer
 
-
 ## Dependencies
 
 * [rxjs](https://github.com/reactivex/rxjs) -- v6.2.1
@@ -73,6 +72,7 @@ ftpClient.connect().subscribe(
 ```
 
 #### Disconnected
+
 If you choose the option of manually disconnect from the server, you have to use the `disconnect` method:
 
 ```typescript
@@ -115,6 +115,7 @@ using the glob module (`patterns` argument), uploads all found files and directo
 ```
 
 ## Examples
+
 In this example we connect to a server, and simultaneously upload all files from the `test` directory, overwriting only
 older files found on the server, and download files from `/public_html/test` directory.
 
