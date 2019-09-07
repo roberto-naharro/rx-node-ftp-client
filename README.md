@@ -1,14 +1,16 @@
-# Description
+# rx-node-ftp-client
+
+## Description
+
 rx-node-ftp-client is an observable version of the package  [ftp-client](https://github.com/noodny/node-ftp-client) - with some improvements.
 
-
-# Requirements
+## Requirements
 
 * [node.js](http://nodejs.org/) -- v0.8.0 or newer
 * npm -- v2.0.0 or newer
 
 
-# Dependencies
+## Dependencies
 
 * [rxjs](https://github.com/reactivex/rxjs) -- v6.2.1
 * [ftp](https://github.com/mscdex/node-ftp) -- v0.3.10
@@ -17,22 +19,25 @@ rx-node-ftp-client is an observable version of the package  [ftp-client](https:/
 * [path](https://github.com/jinder/path) -- v4.17.10
 * [upath](https://github.com/anodynos/upath) -- v1.1.10
 
-# Installation
+## Installation
 
     npm install rx-node-ftp-client
 
-# Usage
+## Usage
 
-## Initialization
+### Initialization
+
 To create an instance of the FTP client object:
 
 TypeScript:
+
 ```typescript
 import { Client } from 'rx-node-ftp-client';
 ftpClient = new Client(config, options);
 ```
 
 where `config` contains the ftp server configuration (these are the default values):
+
 ```javascript
 {
     host: 'localhost',
@@ -41,6 +46,7 @@ where `config` contains the ftp server configuration (these are the default valu
     password: 'anonymous@'
 }
 ```
+
 (To check more options, see [the ftp npm package](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/ftp/index.d.ts#L18))
 
 and the `options` object may contain the following keys:
@@ -52,8 +58,10 @@ and the `options` object may contain the following keys:
 * *globOptions* (Glob configuraion object): default `{ nonull: false }` - Custom glob options for file search.
 * *disconnect* (boolean): default `true` - disconnect from ftp after an upload or download operation.
 
-### Connecting
+#### Connecting
+
 After creating the new object you have to manually connect to the server by using the `connect` method:
+
 ```typescript
 ftpClient.connect().subscribe(
   () => console.log('Connected'),
@@ -64,8 +72,9 @@ ftpClient.connect().subscribe(
 );
 ```
 
-### Disconnected
+#### Disconnected
 If you choose the option of manually disconnect from the server, you have to use the `disconnect` method:
+
 ```typescript
 ftpClient.disconnect().subscribe(
   () => console.log('Disconnected'),
@@ -76,10 +85,12 @@ ftpClient.disconnect().subscribe(
 );
 ```
 
-## Methods
+### Methods
+
 * **download**(source: string, dest: string, options?: Options):
   Observable< DownloadResults > - downloads the contents
 of `source` to `dest` if both exist. The next function returns the following object:
+
 ```typescript
 {
   downloadedFiles: string[],
@@ -92,6 +103,7 @@ of `source` to `dest` if both exist. The next function returns the following obj
 * **upload**(patterns: string | string[], dest: string,
   options?: Options): Observable< UploadResults > - expands the source paths
 using the glob module (`patterns` argument), uploads all found files and directories to the specified `dest`. The next function returns the following object:
+
 ```typescript
 {
   uploadedFiles: string[],
@@ -102,7 +114,7 @@ using the glob module (`patterns` argument), uploads all found files and directo
 }
 ```
 
-# Examples
+## Examples
 In this example we connect to a server, and simultaneously upload all files from the `test` directory, overwriting only
 older files found on the server, and download files from `/public_html/test` directory.
 
@@ -147,6 +159,6 @@ ftpClient.connect().pipe(
 );
 ```
 
-TODO
-====
+## TODO
+
 * Update this document with the different functions added
