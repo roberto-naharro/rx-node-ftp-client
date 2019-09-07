@@ -16,11 +16,12 @@ import { Client, Options } from '../lib/client';
 
 let ftpClient: Client;
 
+/* Check https://dlptest.com/ftp-test/ */
 const serverFTPTest = {
   host: 'ftp.dlptest.com',
   port: 21,
   user: 'dlpuser@dlptest.com',
-  password: '3D6XZV9MKdhM5fF',
+  password: 'fLDScD4Ynth0p4OJ6bW6qCxjh',
   debug: (msg) => {
     // console.log('\t\tFTP --> ' + msg);
   },
@@ -127,7 +128,7 @@ describe('Test upload', function() {
   }).timeout(20000);
 });
 
-describe.only('Test download', function() {
+describe('Test download', function() {
   const testFiles = [
     './test.txt',
     './dir',
@@ -246,5 +247,5 @@ describe.only('Test download', function() {
           done();
         },
     );
-  }).timeout(20000);
+  }).timeout(50000);
 });

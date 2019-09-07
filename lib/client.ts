@@ -6,11 +6,23 @@ export { Options as Config } from 'ftp';
 import * as _ from 'lodash';
 import * as glob from 'glob';
 import {
-  Observable, bindNodeCallback, of, ObservableInput, forkJoin, throwError,
-  race, iif,
+  Observable,
+  bindNodeCallback,
+  of,
+  ObservableInput,
+  forkJoin,
+  throwError,
+  race,
+  iif,
 } from 'rxjs';
 import {
-  tap, switchMap, switchMapTo, catchError, map, concatMap, mapTo,
+  tap,
+  switchMap,
+  switchMapTo,
+  catchError,
+  map,
+  concatMap,
+  mapTo,
   first,
 } from 'rxjs/operators';
 
@@ -19,45 +31,45 @@ export type LoggingTypes = 'info' | 'error' | 'log' | 'warn' | 'trace';
 const loggingLevels: LoggingLevels[] = ['none', 'basic', 'debug'];
 
 export interface Options {
-  overwrite?: 'older' | 'all' | 'none',
-  testingTimezoneDir?: string,
+  overwrite?: 'older' | 'all' | 'none';
+  testingTimezoneDir?: string;
   globOptions?: {
-    nonull: false,
-  },
-  logging?: LoggingLevels,
-  logger?: any,
-  baseDir?: string,
-  disconnect?: boolean,
+    nonull: false;
+  };
+  logging?: LoggingLevels;
+  logger?: any;
+  baseDir?: string;
+  disconnect?: boolean;
 }
 
 export interface UploadResults {
-  uploadedFiles: string[],
-  uploadedDirs: string[],
+  uploadedFiles: string[];
+  uploadedDirs: string[];
   errors: {
-    [origin: string]: Error,
-  },
+    [origin: string]: Error;
+  };
 }
 
 export interface DownloadResults {
-  downloadedFiles: string[],
+  downloadedFiles: string[];
   errors: {
-    [origin: string]: Error,
-  },
+    [origin: string]: Error;
+  };
 }
 
 export interface CustomStats extends fs.Stats {
-  src: string,
-  uploaded?: boolean,
-  error?: Error,
+  src: string;
+  uploaded?: boolean;
+  error?: Error;
 }
 
 export interface RemoteDirFiles {
-  [filename: string]: { date: Date },
+  [filename: string]: { date: Date };
 }
 
 export interface RemoteDirContent {
-  dirs: string[],
-  files: RemoteDirFiles,
+  dirs: string[];
+  files: RemoteDirFiles;
 }
 
 export class Client {
@@ -99,10 +111,14 @@ export class Client {
     });
   }
 
-  private log(msg: any, lvl: LoggingLevels = 'basic',
-    type: LoggingTypes = 'info'): void {
-    if (loggingLevels.indexOf(lvl) <=
-      loggingLevels.indexOf(this.options.logging)) {
+  private log(
+    msg: any,
+    lvl: LoggingLevels = 'basic',
+    type: LoggingTypes = 'info',
+  ): void {
+    if (
+      loggingLevels.indexOf(lvl) <= loggingLevels.indexOf(this.options.logging)
+    ) {
       this.options.logger[type](msg);
     }
   }
@@ -112,8 +128,12 @@ export class Client {
    * is any error or false if there isn't
    * @param  err Error
    */
-  private testEmitError<T>(err: Error, msg?: string,
-    lvl: LoggingLevels = 'debug', callback?: (err?: Error) => T): T | boolean {
+  private testEmitError<T>(
+    err: Error,
+    msg?: string,
+    lvl: LoggingLevels = 'debug',
+    callback?: (err?: Error) => T,
+  ): T | boolean {
     if (err) {
       this.events.emit('error', err);
       this.log(msg ? msg : err, lvl, 'error');
@@ -131,45 +151,50 @@ export class Client {
   private fileExist(path: string): Observable<boolean> {
     return bindNodeCallback<string>(
       (dir: string, callBack: (err: any, res?: boolean) => boolean) => {
-        fs.access(dir, fs.constants.F_OK, (err) => {
+        fs.access(dir, fs.constants.F_OK, err => {
           if (err) {
             if (err.code === 'ENOENT') {
               callBack(null, false);
               return false;
-            }
-            else {
+            } else {
               callBack(err);
             }
-          }
-          else {
+          } else {
             callBack(null, true);
             return true;
           }
         });
-      }).call(this, path);
+      },
+    ).call(this, path);
   }
 
   private checkTimezone(): Observable<void> {
     const localTime = new Date().getTime();
     let serverTime;
     let timestampPath = '.timestamp';
-    timestampPath = this.options.testingTimezoneDir ?
-      path.join(this.options.testingTimezoneDir, timestampPath) : timestampPath;
-    const manageError = (err) => this.testEmitError(err, 'Error - ' +
-      JSON.stringify(err), 'debug', () => of(null)) as Observable<void>;
+    timestampPath = this.options.testingTimezoneDir
+      ? path.join(this.options.testingTimezoneDir, timestampPath)
+      : timestampPath;
+    const manageError = err =>
+      this.testEmitError(err, 'Error - ' + JSON.stringify(err), 'debug', () =>
+        of(null),
+      ) as Observable<void>;
     return race(
       this.errorObservable,
       of(null).pipe(
         switchMapTo(
           bindNodeCallback(this.ftp.put)
-            .call(this.ftp, new Buffer('blank'), timestampPath).pipe(
+            .call(this.ftp, new Buffer('blank'), timestampPath)
+            .pipe(
               catchError(err => {
                 return manageError(err);
               }),
-          )),
+            ),
+        ),
         switchMapTo(
           bindNodeCallback(this.ftp.list)
-            .call(this.ftp, timestampPath).pipe(
+            .call(this.ftp, timestampPath)
+            .pipe(
               catchError(err => {
                 return manageError(err);
               }),
@@ -178,22 +203,28 @@ export class Client {
                   serverTime = list[0].date.getTime();
                 }
               }),
-          )),
+            ),
+        ),
         switchMapTo<void>(
           bindNodeCallback(this.ftp.delete)
-            .call(this.ftp, timestampPath).pipe(
+            .call(this.ftp, timestampPath)
+            .pipe(
               catchError(err => {
                 return manageError(err);
               }),
-          )),
+            ),
+        ),
         tap(() => {
           this.serverTimeDif = localTime - serverTime;
-          this.log('Server time is ' +
-            new Date(new Date().getTime() -
-              this.serverTimeDif), 'debug');
+          this.log(
+            'Server time is ' +
+              new Date(new Date().getTime() - this.serverTimeDif),
+            'debug',
+          );
         }),
         first(),
-      ));
+      ),
+    );
   }
 
   private glob(patterns: string | string[], options): string[] {
@@ -208,7 +239,8 @@ export class Client {
     patterns.forEach(function(pattern) {
       if (pattern.indexOf('!') === 0) {
         exclude = exclude.concat(
-          glob.sync(pattern.substring(1), options) || []);
+          glob.sync(pattern.substring(1), options) || [],
+        );
       } else {
         include = include.concat(glob.sync(pattern, options) || []);
       }
@@ -222,13 +254,15 @@ export class Client {
       return files;
     }
 
-    return _.compact(_.map(files, file => {
-      if (file.replace(baseDir, '')) {
-        return file;
-      } else {
-        return null;
-      }
-    }));
+    return _.compact(
+      _.map(files, file => {
+        if (file.replace(baseDir, '')) {
+          return file;
+        } else {
+          return null;
+        }
+      }),
+    );
   }
 
   private stat(files: string[]): CustomStats[][] {
@@ -258,38 +292,44 @@ export class Client {
             observer.complete();
           });
         });
-      }));
+      }),
+    );
   }
 
   private cleanDestPath(pathIn: string, baseDir: string): string {
     pathIn = path.normalizeTrim(pathIn);
     baseDir = path.normalizeTrim(baseDir);
-    return pathIn.indexOf(baseDir) === 0 ?
-      pathIn.substring(baseDir.length + 1) : pathIn;
+    return pathIn.indexOf(baseDir) === 0
+      ? pathIn.substring(baseDir.length + 1)
+      : pathIn;
   }
 
-  private forkJoinLimit<T>(limit: number,
-    sources: Array<ObservableInput<T>>): Observable<T[]> {
+  private forkJoinLimit<T>(
+    limit: number,
+    sources: Array<ObservableInput<T>>,
+  ): Observable<T[]> {
     if (sources.length < limit) {
       return forkJoin(sources);
     }
-    return _.reduce(_.chunk(sources, limit), (acc, subSource) => {
-      acc = acc.pipe(
-        concatMap(val =>
-          forkJoin(subSource).pipe(
-            map(val2 => (val) ? _.concat(val, val2) : val2),
-          )));
-      return acc;
-    }, of(null));
+    return _.reduce(
+      _.chunk(sources, limit),
+      (acc, subSource) => {
+        acc = acc.pipe(
+          concatMap(val =>
+            forkJoin(subSource).pipe(
+              map(val2 => (val ? _.concat(val, val2) : val2)),
+            ),
+          ),
+        );
+        return acc;
+      },
+      of(null),
+    );
   }
 
   private endObservable(options, optionsBk) {
-    return iif(
-      () => options.disconnect,
-      this.disconnect(),
-      of(null),
-    ).pipe(
-      tap(() => this.options = optionsBk),
+    return iif(() => options.disconnect, this.disconnect(), of(null)).pipe(
+      tap(() => (this.options = optionsBk)),
     );
   }
 
@@ -318,7 +358,8 @@ export class Client {
           this.status = 'connected';
           this.events.emit('ready');
         }),
-      ));
+      ),
+    );
   }
 
   disconnect(): Observable<void> {
@@ -338,7 +379,8 @@ export class Client {
           this.events.emit('end');
         });
         this.ftp.end.call(this.ftp);
-      }));
+      }),
+    );
   }
 
   /**
@@ -350,8 +392,11 @@ export class Client {
    * @param  baseDir
    * @return
    */
-  renameRemoteFile(file: CustomStats, newName: string, baseDir: string = ''):
-    Observable<void> {
+  renameRemoteFile(
+    file: CustomStats,
+    newName: string,
+    baseDir: string = '',
+  ): Observable<void> {
     return race(
       this.errorObservable,
       new Observable<void>(observer => {
@@ -369,7 +414,8 @@ export class Client {
           }
           observer.complete();
         });
-      }));
+      }),
+    );
   }
 
   /**
@@ -400,8 +446,7 @@ export class Client {
             }
             observer.complete();
           });
-        }
-        else {
+        } else {
           this.ftp.delete.call(this.ftp, destPath, err => {
             if (!this.testEmitError(err)) {
               observer.next();
@@ -409,11 +454,14 @@ export class Client {
             observer.complete();
           });
         }
-      }));
+      }),
+    );
   }
 
-  deleteFiles(filesToDelete: CustomStats[], baseDir: string = ''):
-    Observable<void> {
+  deleteFiles(
+    filesToDelete: CustomStats[],
+    baseDir: string = '',
+  ): Observable<void> {
     if (!filesToDelete || _.isEmpty(filesToDelete)) {
       this.log('No files to delete', 'debug');
       return of(null);
@@ -421,10 +469,11 @@ export class Client {
     return iif(
       () => this.status === 'disconnected',
       throwError(new Error('Not connected')),
-      this.forkJoinLimit(this.MAX_CONNECTIONS, _.map(filesToDelete, file =>
-        this.deleteRemoteFile(file, baseDir))).pipe(
-          mapTo(null),
-      ));
+      this.forkJoinLimit(
+        this.MAX_CONNECTIONS,
+        _.map(filesToDelete, file => this.deleteRemoteFile(file, baseDir)),
+      ).pipe(mapTo(null)),
+    );
   }
 
   deleteLocalFiles(filesToDelete: string[]): Observable<void> {
@@ -433,15 +482,18 @@ export class Client {
       return of(null);
     }
 
-    return this.forkJoinLimit(this.MAX_CONNECTIONS, _.map(filesToDelete, file =>
-      bindNodeCallback(fs.unlink).call(this, file))).pipe(
-        mapTo(null),
-    );
+    return this.forkJoinLimit(
+      this.MAX_CONNECTIONS,
+      _.map(filesToDelete, file => bindNodeCallback(fs.unlink).call(this, file)),
+    ).pipe(mapTo(null));
   }
 
-  generalUpload(dataToUpload: CustomStats[], baseDir: string,
-    fn: string, typeContent: string):
-    Observable<CustomStats[]> {
+  generalUpload(
+    dataToUpload: CustomStats[],
+    baseDir: string,
+    fn: string,
+    typeContent: string,
+  ): Observable<CustomStats[]> {
     dataToUpload = _.compact(dataToUpload);
     if (!dataToUpload || _.isEmpty(dataToUpload)) {
       this.log(`Nothing to upload`, 'debug');
@@ -449,71 +501,96 @@ export class Client {
     }
     return race(
       this.errorObservable,
-      this.forkJoinLimit(this.MAX_CONNECTIONS, _.map(dataToUpload, data =>
-        new Observable<CustomStats>(observer => {
-          const destPath = this.cleanDestPath(data.src, baseDir);
-          try {
-            this.log(`Uploading ${typeContent} (${destPath})`, 'debug');
-            let callArgs;
-            switch (fn) {
-              case 'mkdir':
-                callArgs = [destPath, true];
-                break;
-              default:
-                callArgs = [data.src, destPath];
-            }
-            this.ftp[fn].call(this.ftp, ...callArgs, err => {
-              const hasError = this.testEmitError(err,
-                `Error uploading ${typeContent} (${destPath}): ${
-                JSON.stringify(err)}`, 'basic',
-                (error) => _.assign(data, { error }),
-              );
-              if (!hasError) {
-                this.log(`Finished upload ${typeContent} (${destPath})`,
-                  'basic');
-                _.assign(data, { uploaded: true });
+      this.forkJoinLimit(
+        this.MAX_CONNECTIONS,
+        _.map(
+          dataToUpload,
+          data =>
+            new Observable<CustomStats>(observer => {
+              const destPath = this.cleanDestPath(data.src, baseDir);
+              try {
+                this.log(`Uploading ${typeContent} (${destPath})`, 'debug');
+                let callArgs;
+                switch (fn) {
+                  case 'mkdir':
+                    callArgs = [destPath, true];
+                    break;
+                  default:
+                    callArgs = [data.src, destPath];
+                }
+                this.ftp[fn].call(this.ftp, ...callArgs, err => {
+                  const hasError = this.testEmitError(
+                    err,
+                    `Error uploading ${typeContent} (${destPath}): ${JSON.stringify(
+                      err,
+                    )}`,
+                    'basic',
+                    error => _.assign(data, { error }),
+                  );
+                  if (!hasError) {
+                    this.log(
+                      `Finished upload ${typeContent} (${destPath})`,
+                      'basic',
+                    );
+                    _.assign(data, { uploaded: true });
+                  }
+                  observer.next(data);
+                  observer.complete();
+                });
+              } catch (err) {
+                this.testEmitError(
+                  err,
+                  `Error uploading ${typeContent} (${destPath}): ${JSON.stringify(
+                    err,
+                  )}`,
+                  'basic',
+                  error => _.assign(data, { error }),
+                );
               }
-              observer.next(data);
-              observer.complete();
-            });
-
-          } catch (err) {
-            this.testEmitError(err,
-              `Error uploading ${typeContent} (${destPath}): ${
-              JSON.stringify(err)}`, 'basic',
-              (error) => _.assign(data, { error }),
-            );
-          }
-        }))));
+            }),
+        ),
+      ),
+    );
   }
 
-  uploadFiles(filesToUpload: CustomStats[], baseDir: string):
-    Observable<CustomStats[]> {
+  uploadFiles(
+    filesToUpload: CustomStats[],
+    baseDir: string,
+  ): Observable<CustomStats[]> {
     return this.generalUpload(filesToUpload, baseDir, 'put', 'file');
   }
 
-  uploadDirs(dirsToUpload: CustomStats[], baseDir: string):
-    Observable<CustomStats[]> {
+  uploadDirs(
+    dirsToUpload: CustomStats[],
+    baseDir: string,
+  ): Observable<CustomStats[]> {
     return this.generalUpload(dirsToUpload, baseDir, 'mkdir', 'directory');
   }
 
-  createLocalDirectories(dirs: string[], baseDir: string, dest: string):
-    Observable<void> {
+  createLocalDirectories(
+    dirs: string[],
+    baseDir: string,
+    dest: string,
+  ): Observable<void> {
     const out = [];
 
     dirs.forEach(dir => {
       const dirName = path.join(dest, this.cleanDestPath(dir, baseDir));
       // `${dest}/${this.cleanDestPath(dir, baseDir)}`;
-      out.push(this.fileExist(dirName).pipe(
-        switchMap(exist => {
-          if (!exist) {
-            return bindNodeCallback(fs.mkdir).call(this, dirName).pipe(
-              tap(() => this.log('Created directory ' + dirName, 'debug')),
-            );
-          }
-          return of(null);
-        }),
-      ));
+      out.push(
+        this.fileExist(dirName).pipe(
+          switchMap(exist => {
+            if (!exist) {
+              return bindNodeCallback(fs.mkdir)
+                .call(this, dirName)
+                .pipe(
+                  tap(() => this.log('Created directory ' + dirName, 'debug')),
+                );
+            }
+            return of(null);
+          }),
+        ),
+      );
     });
     return this.forkJoinLimit(this.MAX_CONNECTIONS, out).pipe(mapTo(null));
   }
@@ -524,49 +601,60 @@ export class Client {
    * @param  dirs    directories to compare with remote
    * @param  options
    */
-  getRemoteFilesToDelete(files: CustomStats[], dirs: CustomStats[],
-    options: Options): Observable<CustomStats[]> {
+  getRemoteFilesToDelete(
+    files: CustomStats[],
+    dirs: CustomStats[],
+    options: Options,
+  ): Observable<CustomStats[]> {
     const all: CustomStats[] = files.concat(dirs);
     if (options.overwrite === 'all') {
       return of(all);
     }
     return race(
       this.errorObservable,
-      this.forkJoinLimit(this.MAX_CONNECTIONS, _.map(all, file =>
-        new Observable<CustomStats>(observer => {
-          const destPath = this.cleanDestPath(file.src, options.baseDir);
+      this.forkJoinLimit(
+        this.MAX_CONNECTIONS,
+        _.map(
+          all,
+          file =>
+            new Observable<CustomStats>(observer => {
+              const destPath = this.cleanDestPath(file.src, options.baseDir);
 
-          this.ftp.list.call(this.ftp, destPath, (err, list) => {
-            this.testEmitError(err);
-            this.log('Comparing file ' + file.src, 'debug');
-            if (list && list[0]) {
-              if (options.overwrite === 'older' && list[0].date &&
-                new Date(list[0].date.getTime() + this.serverTimeDif)
-                < file.mtime) {
-                observer.next(file);
-                observer.complete();
-              } else {
-                if (file.isDirectory()) {
-                  dirs.forEach((dir, i) => {
-                    if (dir.src === file.src) {
-                      dirs.splice(i, 1);
+              this.ftp.list.call(this.ftp, destPath, (err, list) => {
+                this.testEmitError(err);
+                this.log('Comparing file ' + file.src, 'debug');
+                if (list && list[0]) {
+                  if (
+                    options.overwrite === 'older' &&
+                    list[0].date &&
+                    new Date(list[0].date.getTime() + this.serverTimeDif) <
+                      file.mtime
+                  ) {
+                    observer.next(file);
+                    observer.complete();
+                  } else {
+                    if (file.isDirectory()) {
+                      dirs.forEach((dir, i) => {
+                        if (dir.src === file.src) {
+                          dirs.splice(i, 1);
+                        }
+                      });
+                    } else {
+                      files.forEach((f, i) => {
+                        if (file.src === f.src) {
+                          files.splice(i, 1);
+                        }
+                      });
                     }
-                  });
-                } else {
-                  files.forEach((f, i) => {
-                    if (file.src === f.src) {
-                      files.splice(i, 1);
-                    }
-                  });
+                  }
                 }
-              }
-            }
-            observer.next(null);
-            observer.complete();
-          });
-        })))).pipe(
-          map(r => _.compact(r)),
-    );
+                observer.next(null);
+                observer.complete();
+              });
+            }),
+        ),
+      ),
+    ).pipe(map(r => _.compact(r)));
   }
 
   /**
@@ -576,102 +664,129 @@ export class Client {
    * downloaded)
    * @param  options
    */
-  getLocalFilesToDelete(files: RemoteDirFiles, options: Options,
-    remotePath: string, localPath: string): Observable<string[]> {
+  getLocalFilesToDelete(
+    files: RemoteDirFiles,
+    options: Options,
+    remotePath: string,
+    localPath: string,
+  ): Observable<string[]> {
     if (options.overwrite === 'all') {
       return of(_.keys(files));
     }
-    return forkJoin(_.map(files, (details, file) => {
-      const fileName = file.replace(remotePath, localPath);
-      return this.fileExist(fileName).pipe(
-        switchMap(exist => {
-          if (exist) {
-            if (options.overwrite === 'older') {
-              return bindNodeCallback(fs.stat).call(fs, fileName).pipe(
-                switchMap((stat: fs.Stats) => {
-                  if (stat.mtime.getTime() < details.date.getTime() +
-                    this.serverTimeDif) {
-                    return of(fileName);
-                  } else {
-                    this.log('Skipping file', 'debug');
-                    delete files[file];
-                    return of(null);
-                  }
-                }),
-              );
+    return forkJoin(
+      _.map(files, (details, file) => {
+        const fileName = file.replace(remotePath, localPath);
+        return this.fileExist(fileName).pipe(
+          switchMap(exist => {
+            if (exist) {
+              if (options.overwrite === 'older') {
+                return bindNodeCallback(fs.stat)
+                  .call(fs, fileName)
+                  .pipe(
+                    switchMap((stat: fs.Stats) => {
+                      if (
+                        stat.mtime.getTime() <
+                        details.date.getTime() + this.serverTimeDif
+                      ) {
+                        return of(fileName);
+                      } else {
+                        this.log('Skipping file', 'debug');
+                        delete files[file];
+                        return of(null);
+                      }
+                    }),
+                  );
+              }
+              this.log('Skipping file', 'debug');
+              delete files[file];
+              return of(null);
             }
-            this.log('Skipping file', 'debug');
-            delete files[file];
             return of(null);
-          }
-          return of(null);
-        }),
-      );
-    })).pipe(
-      map(r => _.compact(r)),
-    );
+          }),
+        );
+      }),
+    ).pipe(map((r: string[] | null) => _.compact(r)));
   }
 
   lookForRemoteContent(dir: string): Observable<RemoteDirContent> {
     let dirs = [];
     let files = {};
-    return bindNodeCallback(this.ftp.list).call(this.ftp, dir).pipe(
-      tap(() => {
-        this.log(`Looking for content in ${dir}`, 'debug');
-      }),
-      catchError((err: Error) => {
-        return throwError(new Error('The source directory on the server '
-          + dir + ' does not exist. ' + err.message));
-      }),
-      switchMap(list => {
-        if (_.isUndefined(list) || _.isUndefined(list[0])) {
-          return throwError(new Error('The source directory on the server '
-            + dir + ' does not exist. '));
-        }
-        const out: Array<Observable<RemoteDirContent>> = [];
-
-        _.each(list, (file: FTP.ListingElement) => {
-          if (file.name !== '.' && file.name !== '..') {
-            this.log('--- file ' + JSON.stringify(file));
-            const filename = path.join(dir, file.name);
-            // dir + '/' + file.name;
-            if (file.type === 'd') {
-              dirs.push(filename);
-              out.push(this.lookForRemoteContent(filename));
-            } else if (file.type === '-') {
-              files[filename] = {
-                date: file.date,
-              };
-            }
+    return bindNodeCallback(this.ftp.list)
+      .call(this.ftp, dir)
+      .pipe(
+        tap(() => {
+          this.log(`Looking for content in ${dir}`, 'debug');
+        }),
+        catchError((err: Error) => {
+          return throwError(
+            new Error(
+              'The source directory on the server ' +
+                dir +
+                ' does not exist. ' +
+                err.message,
+            ),
+          );
+        }),
+        switchMap((list: FTP.ListingElement[]) => {
+          if (_.isUndefined(list) || _.isUndefined(list[0])) {
+            return throwError(
+              new Error(
+                'The source directory on the server ' +
+                  dir +
+                  ' does not exist. ',
+              ),
+            );
           }
-        });
+          const out: Array<Observable<RemoteDirContent>> = [];
 
-        if (out.length === 0) {
-          return of({ dirs, files });
-        }
-        return this.forkJoinLimit(this.MAX_CONNECTIONS, out).pipe(
-          map(results => {
-            _.map(results, result => {
-              dirs = _.concat(dirs, result.dirs);
-              files = _.assign(files, result.files);
-            });
-            return { dirs, files };
-          }),
-        );
-      }),
-    );
+          _.each(list, (file: FTP.ListingElement) => {
+            if (file.name !== '.' && file.name !== '..') {
+              this.log('--- file ' + JSON.stringify(file));
+              const filename = path.join(dir, file.name);
+              // dir + '/' + file.name;
+              if (file.type === 'd') {
+                dirs.push(filename);
+                out.push(this.lookForRemoteContent(filename));
+              } else if (file.type === '-') {
+                files[filename] = {
+                  date: file.date,
+                };
+              }
+            }
+          });
+
+          if (out.length === 0) {
+            return of({ dirs, files });
+          }
+          return this.forkJoinLimit(this.MAX_CONNECTIONS, out).pipe(
+            map(results => {
+              _.map(results, result => {
+                dirs = _.concat(dirs, result.dirs);
+                files = _.assign(files, result.files);
+              });
+              return { dirs, files };
+            }),
+          );
+        }),
+      );
   }
 
-  dowloadSingleFile(file: string, remotePath: string, localPath: string):
-    Observable<string> {
+  dowloadSingleFile(
+    file: string,
+    remotePath: string,
+    localPath: string,
+  ): Observable<string> {
     return new Observable<string>(observer => {
       this.log('Downloading file ' + file, 'debug');
 
       this.ftp.get.call(this.ftp, file, (err, stream) => {
         if (err && err.message !== 'Unable to make data connection') {
-          this.testEmitError(new Error('Error downloading file ' + file + ' - '
-            + JSON.stringify(err)),
-            'basic');
+          this.testEmitError(
+            new Error(
+              'Error downloading file ' + file + ' - ' + JSON.stringify(err),
+            ),
+            'basic',
+          );
           observer.error(err);
         }
         if (stream) {
@@ -680,29 +795,31 @@ export class Client {
             observer.next(file);
             observer.complete();
           });
-          const writeStream = fs.createWriteStream(file.replace(remotePath,
-            localPath));
+          const writeStream = fs.createWriteStream(
+            file.replace(remotePath, localPath),
+          );
           writeStream.on('error', errw => {
             observer.error(errw);
             this.testEmitError(errw);
           });
           stream.pipe(writeStream);
-        }
-        else {
+        } else {
           observer.next(null);
           observer.complete();
         }
       });
-
     });
   }
 
-  upload(patterns: string | string[], dest: string,
-    options?: Options): Observable<UploadResults> {
+  upload(
+    patterns: string | string[],
+    dest: string,
+    options?: Options,
+  ): Observable<UploadResults> {
     options = _.defaults(options || {}, this.options);
     const optionsBk = this.options;
     this.options = options;
-    const result = {
+    const result: UploadResults = {
       uploadedFiles: [],
       uploadedDirs: [],
       errors: {},
@@ -711,8 +828,7 @@ export class Client {
     // Fix for Windows slash
     if (options.baseDir) {
       options.baseDir = path.normalizeTrim(options.baseDir);
-    }
-    else {
+    } else {
       options.baseDir = '';
     }
 
@@ -738,8 +854,11 @@ export class Client {
       });
     };
 
-    const pushResults = (datas: CustomStats[], typeContent: string,
-      resIndex: string): void => {
+    const pushResults = (
+      datas: CustomStats[],
+      typeContent: string,
+      resIndex: string,
+    ): void => {
       if (!datas && _.isEmpty(datas)) {
         return;
       }
@@ -775,10 +894,16 @@ export class Client {
       tap(toDelete => {
         this.log('FILES TO DELETE', 'debug');
         sources(toDelete);
-        this.log('Found ' + files.length + ' files and ' + dirs.length +
-          ' directories to upload.', 'basic');
+        this.log(
+          'Found ' +
+            files.length +
+            ' files and ' +
+            dirs.length +
+            ' directories to upload.',
+          'basic',
+        );
       }),
-      switchMap((toDelete) => {
+      switchMap(toDelete => {
         this.log('2. Delete files', 'debug');
         return this.deleteFiles(toDelete, options.baseDir);
       }),
@@ -798,24 +923,32 @@ export class Client {
       }),
       tap(() => {
         this.log('Upload done', 'debug');
-        this.log('Finished uploading ' + result.uploadedFiles.length + ' of ' +
-          files.length + ' files', 'basic');
+        this.log(
+          'Finished uploading ' +
+            result.uploadedFiles.length +
+            ' of ' +
+            files.length +
+            ' files',
+          'basic',
+        );
       }),
       mapTo(result),
-      concatMap(res =>
-        this.endObservable(options, optionsBk).pipe(
-          mapTo(res),
-        )),
-      catchError((err) => {
+      concatMap((res: UploadResults) =>
+        this.endObservable(options, optionsBk).pipe(mapTo(res)),
+      ),
+      catchError(err => {
         return this.endObservable(options, optionsBk).pipe(
           switchMapTo(throwError(err)),
         );
       }),
-    );
+    ) as Observable<UploadResults>;
   }
 
-  download(source: string, dest: string, options?: Options):
-    Observable<DownloadResults> {
+  download(
+    source: string,
+    dest: string,
+    options?: Options,
+  ): Observable<DownloadResults> {
     options = _.defaults(options || {}, this.options);
     // All the operations inside with use the options passed, and after options
     // will be restored
@@ -833,9 +966,15 @@ export class Client {
       switchMap(exist => {
         if (!exist) {
           return this.disconnect().pipe(
-            switchMapTo(throwError(
-              new Error('The download destination directory '
-                + dest + ' does not exist.'))),
+            switchMapTo(
+              throwError(
+                new Error(
+                  'The download destination directory ' +
+                    dest +
+                    ' does not exist.',
+                ),
+              ),
+            ),
           );
         }
         return of(null);
@@ -867,37 +1006,47 @@ export class Client {
         return this.deleteLocalFiles(toDelete);
       }),
       tap(() => {
-        this.log('Found ' + _.keys(files).length + ' files to download.',
-          'basic');
+        this.log(
+          'Found ' + _.keys(files).length + ' files to download.',
+          'basic',
+        );
       }),
       switchMap(() => {
         this.log('4. Download files', 'debug');
-        return this.forkJoinLimit(this.MAX_CONNECTIONS, _.map(_.keys(files),
-          file => this.dowloadSingleFile(file, source, dest).pipe(
-            tap(fileDownloaded => {
-              if (fileDownloaded) {
-                result.downloadedFiles.push(fileDownloaded);
-              }
-            }),
-            catchError(err => {
-              result.errors[file] = err;
-              return of(null);
-            }),
-          )));
+        return this.forkJoinLimit(
+          this.MAX_CONNECTIONS,
+          _.map(_.keys(files), file =>
+            this.dowloadSingleFile(file, source, dest).pipe(
+              tap(fileDownloaded => {
+                if (fileDownloaded) {
+                  result.downloadedFiles.push(fileDownloaded);
+                }
+              }),
+              catchError(err => {
+                result.errors[file] = err;
+                return of(null);
+              }),
+            ),
+          ),
+        );
       }),
       tap(() => {
-        this.log('Finished downloading ' + result.downloadedFiles.length +
-          ' of ' + _.keys(files).length + ' files', 'basic');
+        this.log(
+          'Finished downloading ' +
+            result.downloadedFiles.length +
+            ' of ' +
+            _.keys(files).length +
+            ' files',
+          'basic',
+        );
       }),
       mapTo(result),
-      concatMap(res => this.endObservable(options, optionsBk).pipe(
-        mapTo(res),
-      )),
-      catchError((err) => {
+      concatMap(res => this.endObservable(options, optionsBk).pipe(mapTo(res))),
+      catchError(err => {
         return this.endObservable(options, optionsBk).pipe(
           switchMapTo(throwError(err)),
         );
       }),
-    );
+    ) as Observable<DownloadResults>;
   }
 }
