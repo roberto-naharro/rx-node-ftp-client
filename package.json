@@ -38,9 +38,10 @@
     "upath": "^1.2.0"
   },
   "scripts": {
-    "build": "gulp",
+    "build": "gulp && npm run prettier",
     "test": "gulp build-test && mocha \"./test/**/*.test.js*\"",
-    "test-debug": "gulp build-test && mocha --inspect-brk \"./test/**/*.test.js*\""
+    "test-debug": "gulp build-test && mocha --inspect-brk \"./test/**/*.test.js*\"",
+    "prettier": "prettier --write \"{test,lib}/**/*.ts\""
   },
   "devDependencies": {
     "@sinonjs/referee-sinon": "^7.0.2",
@@ -68,6 +69,8 @@
     "jsverify": "^0.8.4",
     "knuth-shuffle": "^1.0.8",
     "mocha": "^7.1.1",
+    "prettier": "^2.0.5",
+    "pretty-quick": "^2.0.1",
     "rimraf": "^3.0.2",
     "sinon": "^9.0.2",
     "typescript": "^3.8.3"
