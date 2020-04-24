@@ -21,7 +21,7 @@ const serverFTPTest = {
   host: 'ftp.dlptest.com',
   port: 21,
   user: 'dlpuser@dlptest.com',
-  password: 'fLDScD4Ynth0p4OJ6bW6qCxjh',
+  password: 'SzMf7rTE4pCrf9dV286GuNe4N',
   debug: (msg) => {
     // console.log('\t\tFTP --> ' + msg);
   },
