@@ -12,7 +12,6 @@ const packageName = 'rx-node-ftp-client';
 
 gulp.task('build-types', function() {
   return dts_gen({
-    name: packageName,
     baseDir: 'lib/',
     project: './',
     out: 'index.d.ts',

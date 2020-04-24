@@ -1,6 +1,6 @@
 {
   "name": "rx-node-ftp-client",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "author": {
     "name": "Roberto Naharro",
     "email": "roberto.naharro@gmail.com"
@@ -32,9 +32,9 @@
   "homepage": "https://github.com/roberto-naharro/rx-node-ftp-client",
   "dependencies": {
     "ftp": "^0.3.10",
-    "glob": "^7.1.4",
+    "glob": "^7.1.6",
     "lodash": "^4.17.15",
-    "rxjs": "^6.5.3",
+    "rxjs": "^6.5.5",
     "upath": "^1.2.0"
   },
   "scripts": {
@@ -43,33 +43,33 @@
     "test-debug": "gulp build-test && mocha --inspect-brk \"./test/**/*.test.js*\""
   },
   "devDependencies": {
-    "@sinonjs/referee-sinon": "^5.0.0",
-    "@types/chai": "^4.2.1",
-    "@types/faker": "^4.1.5",
-    "@types/ftp": "^0.3.29",
-    "@types/glob": "^5.0.36",
-    "@types/lodash": "^4.14.138",
-    "@types/mocha": "^5.2.7",
-    "@types/node": "10.1.2",
-    "@types/rimraf": "^2.0.2",
-    "@types/sinon": "^5.0.7",
+    "@sinonjs/referee-sinon": "^7.0.2",
+    "@types/chai": "^4.2.11",
+    "@types/faker": "^4.1.11",
+    "@types/ftp": "^0.3.31",
+    "@types/glob": "^7.1.1",
+    "@types/lodash": "^4.14.150",
+    "@types/mocha": "^7.0.2",
+    "@types/node": "13.13.2",
+    "@types/rimraf": "^3.0.0",
+    "@types/sinon": "^9.0.0",
     "chai": "^4.2.0",
     "chai-files": "^1.4.0",
-    "del": "^3.0.0",
-    "dts-generator": "^2.1.0",
+    "del": "^5.1.0",
+    "dts-generator": "^3.0.0",
     "faker": "^4.1.0",
     "gulp": "^4.0.2",
     "gulp-concat": "^2.6.1",
     "gulp-debug": "^4.0.0",
-    "gulp-filter": "^5.1.0",
-    "gulp-rename": "^1.4.0",
+    "gulp-filter": "^6.0.0",
+    "gulp-rename": "^2.0.0",
     "gulp-sourcemaps": "^2.6.5",
-    "gulp-typescript": "^4.0.2",
+    "gulp-typescript": "^5.0.1",
     "jsverify": "^0.8.4",
     "knuth-shuffle": "^1.0.8",
-    "mocha": "^5.2.0",
-    "rimraf": "^2.7.1",
-    "sinon": "^7.4.2",
-    "typescript": "^2.9.2"
+    "mocha": "^7.1.1",
+    "rimraf": "^3.0.2",
+    "sinon": "^9.0.2",
+    "typescript": "^3.8.3"
   }
 }
